@@ -65,12 +65,9 @@ package handler
 import (
 	"net/http"
 	"greet/response"// ①
-	{% raw %}
 	{{.ImportPackages}}
-	{% endraw %}
 )
 
-{% raw %}
 func {{.HandlerName}}(ctx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		{{if .HasRequest}}var req types.{{.RequestType}}
@@ -80,12 +77,11 @@ func {{.HandlerName}}(ctx *svc.ServiceContext) http.HandlerFunc {
 		}{{end}}
 
 		l := logic.New{{.LogicType}}(r.Context(), ctx)
-		{{if .HasResp}}resp, {{end}}err := l.{{.Call}}({{if .HasRequest}}req{{end}})
+		{{if .HasResp}}resp, {{end}}err := l.{{.Call}}({{if .HasRequest}}＆req{{end}})
 		{{if .HasResp}}response.Response(w, resp, err){{else}}response.Response(w, nil, err){{end}}//②
 			
 	}
 }
-{% endraw %}
 ```
 
 ① 替换为你真实的`response`包名，仅供参考
@@ -108,7 +104,7 @@ func GreetHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := logic.NewGreetLogic(r.Context(), ctx)
-		resp, err := l.Greet(req)
+		resp, err := l.Greet(＆req)
 		// 以下内容将被自定义模板替换
 		if err != nil {
 			httpx.Error(w, err)
@@ -129,7 +125,7 @@ func GreetHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := logic.NewGreetLogic(r.Context(), ctx)
-		resp, err := l.Greet(req)
+		resp, err := l.Greet(＆req)
 		response.Response(w, resp, err)
 	}
 }
